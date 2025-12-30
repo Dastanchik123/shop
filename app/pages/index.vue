@@ -209,9 +209,9 @@ onMounted(() => {
                 <div class="category-icon mb-3">
                   <i class="bi bi-tools fs-1 text-primary"></i>
                 </div>
-                <h5 class="card-title fw-bold mb-3">{{ category }}</h5>
+                <h5 class="card-title fw-bold mb-3">{{ category.name }}</h5>
                 <NuxtLink
-                  :to="`/catalog?category=${encodeURIComponent(category)}`"
+                  :to="`/catalog?category=${category.slug}`"
                   class="btn btn-outline-primary btn-sm"
                 >
                   Смотреть товары
