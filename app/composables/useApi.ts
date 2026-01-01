@@ -10,11 +10,24 @@ export const useApi = () => {
 
   const apiFetch = async (endpoint: string, options: any = {}) => {
     const token = getAuthToken();
-    const headers: Record<string, string> = {
+    const headers: any = {
       "Content-Type": "application/json",
       Accept: "application/json",
       ...(options.headers || {}),
     };
+
+    // Если body это FormData, Content-Type должен быть удален, чтобы браузер выставил boundary
+    if (options.body instanceof FormData) {
+      delete headers["Content-Type"];
+    }
+
+    // Если Content-Type явно задан как null/undefined, удаляем его
+    if (
+      headers["Content-Type"] === undefined ||
+      headers["Content-Type"] === null
+    ) {
+      delete headers["Content-Type"];
+    }
 
     if (token) {
       headers.Authorization = `Bearer ${token}`;
@@ -62,4 +75,3 @@ export const useApi = () => {
     getAuthToken,
   };
 };
-

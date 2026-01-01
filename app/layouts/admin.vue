@@ -4,11 +4,13 @@
       <h3>Admin</h3>
       <NuxtLink to="/admin">Панель управления</NuxtLink>
       <NuxtLink to="/admin/products">Товары</NuxtLink>
+      <NuxtLink to="/admin/categories">Категории</NuxtLink>
       <NuxtLink to="/admin/orders">Заказы</NuxtLink>
+      <NuxtLink to="/admin/users">Пользователи</NuxtLink>
     </aside>
 
     <main class="content">
-      <slot />
+      <NuxtPage />
     </main>
   </div>
 </template>

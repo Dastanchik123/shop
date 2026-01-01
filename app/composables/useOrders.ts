@@ -3,11 +3,13 @@ import { useApi } from "./useApi";
 export const useOrders = () => {
   const api = useApi();
 
-  const getOrders = async (params: {
-    status?: string;
-    per_page?: number;
-    page?: number;
-  } = {}) => {
+  const getOrders = async (
+    params: {
+      status?: string;
+      per_page?: number;
+      page?: number;
+    } = {}
+  ) => {
     try {
       const queryParams = new URLSearchParams();
       Object.entries(params).forEach(([key, value]) => {
@@ -60,11 +62,22 @@ export const useOrders = () => {
     }
   };
 
+  const updateOrder = async (id: number | string, data: any) => {
+    try {
+      return await api.apiFetch(`/orders/${id}`, {
+        method: "PUT",
+        body: data,
+      });
+    } catch (error) {
+      throw error;
+    }
+  };
+
   return {
     getOrders,
     getOrder,
     createOrder,
     cancelOrder,
+    updateOrder,
   };
 };
-

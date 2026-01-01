@@ -4,14 +4,15 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: true,
   modules: ["@pinia/nuxt"],
-  css: ["../app/assets/css/global.css"],
+  css: ["bootstrap/dist/css/bootstrap.min.css", "../app/assets/css/global.css"],
+  vite: {
+    optimizeDeps: {
+      include: ["bootstrap/dist/js/bootstrap.bundle.min.js"], // JS для Bootstrap
+    },
+  },
   app: {
     head: {
       link: [
-        {
-          rel: "stylesheet",
-          href: "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css",
-        },
         {
           rel: "stylesheet",
           href: "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css",
@@ -19,7 +20,7 @@ export default defineNuxtConfig({
       ],
       script: [
         {
-          src: "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js",
+          src: "https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js",
           defer: true,
         },
       ],

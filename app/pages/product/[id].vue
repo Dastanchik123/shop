@@ -29,14 +29,15 @@ const loadProduct = async () => {
 };
 
 // Форматирование цены
-const formattedPrice = computed(() => {
-  if (!product.value) return "0";
-  const price = product.value.final_price || product.value.price;
-  return parseFloat(price).toLocaleString("ru-RU", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-});
+// const formattedPrice = computed(() => {
+//   if (!product.value) return "0";
+//   // Если есть цена со скидкой (и она не null/0), используем её, иначе обычную цену
+//   const price = product.value.sale_price || product.value.price;
+//   return parseFloat(price).toLocaleString("ru-RU", {
+//     minimumFractionDigits: 2,
+//     maximumFractionDigits: 2,
+//   });
+// });
 
 // Placeholder для изображения
 const productImage = computed(() => {
@@ -58,9 +59,7 @@ const handleAddToCart = async () => {
 
   try {
     await addToCart(product.value.id, quantity.value);
-    alert(
-      `Добавлено в корзину: ${product.value.name} (${quantity.value} шт.)`
-    );
+    alert(`Добавлено в корзину: ${product.value.name} (${quantity.value} шт.)`);
   } catch (err) {
     alert(err.data?.message || "Ошибка добавления в корзину");
   }
@@ -68,6 +67,10 @@ const handleAddToCart = async () => {
 
 onMounted(() => {
   loadProduct();
+});
+
+watch(quantity, () => {
+  console.log(quantity.value);
 });
 </script>
 
@@ -105,7 +108,7 @@ onMounted(() => {
         <span class="breadcrumb-separator">/</span>
         <NuxtLink to="/catalog" class="breadcrumb-link">Каталог</NuxtLink>
         <span class="breadcrumb-separator">/</span>
-        <span class="breadcrumb-current">{{ product.category }}</span>
+        <span class="breadcrumb-current">{{ product.category.name }}</span>
         <span class="breadcrumb-separator">/</span>
         <span class="breadcrumb-current">{{ product.name }}</span>
       </nav>
@@ -114,14 +117,12 @@ onMounted(() => {
         <!-- Галерея изображений -->
         <div class="product-gallery">
           <div class="main-image">
-            <img
-              :src="'http://127.0.0.1:8000' + productImage"
-              :alt="product.name"
-            />
+            <!-- <img :src="productImage" :alt="product.name" /> -->
+            <img :src="product.image_url" :alt="product.name" />
           </div>
           <div class="image-thumbnails" v-if="product.image">
             <div class="thumbnail active">
-              <img :src="productImage" :alt="product.name" />
+              <img :src="product.image_url" :alt="product.name" />
             </div>
           </div>
         </div>
@@ -130,7 +131,7 @@ onMounted(() => {
         <div class="product-info">
           <!-- Категория -->
           <div class="product-category">
-            <span class="category-badge">{{ product.category }}</span>
+            <span class="category-badge">{{ product.category.name }}</span>
           </div>
 
           <!-- Название -->
@@ -138,7 +139,7 @@ onMounted(() => {
 
           <!-- Цена -->
           <div class="product-price">
-            <span class="price-value">{{ formattedPrice }}</span>
+            <span class="price-value">{{ product.price }}</span>
             <span class="price-currency">сом</span>
           </div>
 
@@ -152,7 +153,9 @@ onMounted(() => {
             >
               {{
                 product.in_stock
-                  ? `В наличии (${product.stock_quantity || product.quantity} шт.)`
+                  ? `В наличии (${
+                      product.stock_quantity || product.quantity
+                    } шт.)`
                   : "Нет в наличии"
               }}
             </span>
@@ -161,7 +164,7 @@ onMounted(() => {
           <!-- Описание -->
           <div class="product-description">
             <h3>Описание</h3>
-            <p>{{ product.description }}</p>
+            <p>{{ product.short_description }}</p>
           </div>
 
           <!-- Количество и кнопка -->
@@ -170,7 +173,7 @@ onMounted(() => {
               <label for="quantity">Количество:</label>
               <div class="quantity-controls">
                 <button
-                  @click="quantity = Math.max(1, quantity - 1)"
+                  @click="quantity = quantity - 1"
                   class="quantity-btn"
                   :disabled="quantity <= 1"
                 >
@@ -185,9 +188,11 @@ onMounted(() => {
                   class="quantity-input"
                 />
                 <button
-                  @click="quantity = Math.min(product.quantity, quantity + 1)"
+                  @click="quantity = quantity + 1"
                   class="quantity-btn"
-                  :disabled="quantity >= (product.stock_quantity || product.quantity)"
+                  :disabled="
+                    quantity >= (product.stock_quantity || product.quantity)
+                  "
                 >
                   +
                 </button>
@@ -217,11 +222,56 @@ onMounted(() => {
           </div>
         </div>
       </div>
+      <div class="short-description rounded-3 mt-5 mb-5 " style="background-color:  #f5f5f5; padding: 20px;">
+        <h3>Полное описание</h3>
+        <p>{{ product.description }}</p>
+      </div>
+      <div class="d-flex flex-column rounded-3 mt-5 mb-5" style="background-color:  #f5f5f5; padding: 20px;">
+        <h1>Краткая информация</h1>
+        <div class="product-characteristics fs-6">
+          <p><i class="bi bi-info-circle text-info me-2"></i> Основные </p>
+          <div
+            class="characteristic-item"
+            v-for="(value, key) in product.attributes"
+            :key="key"
+          >
+            <span class="characteristic-label">{{ key }}</span>
+            <span class="characteristic-dots"></span>
+            <span class="characteristic-value">{{ value }}</span>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 </template>
 
 <style scoped>
+#quantity::-webkit-outer-spin-button,
+#quantity::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.product-characteristics {
+  margin-top: 20px;
+}
+
+.characteristic-item {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+
+.characteristic-label {
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.characteristic-dots {
+  flex: 1;
+  border-bottom: 3px dotted #94a3b8;
+  margin: 0 6px;
+}
+
 .product-page {
   min-height: calc(100vh - 200px);
   padding: 40px 20px;

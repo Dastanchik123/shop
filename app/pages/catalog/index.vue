@@ -251,23 +251,23 @@ onMounted(() => {
                   class="product-image-wrapper position-relative ratio ratio-1x1"
                 >
                   <img
-                    :src="getProductImage(product)"
+                    :src="product.image_url"
                     class="card-img-top"
                     :alt="product.name"
                     style="object-fit: cover"
                   />
-                  <span
+                  <!-- <span
                     v-if="product.in_stock"
-                    class="badge bg-success position-absolute top-0 end-0 m-2"
+                    class="badge bg-success text-white position-absolute top-0 end-0 m-2"
                   >
                     В наличии
                   </span>
                   <span
                     v-else
-                    class="badge bg-danger position-absolute top-0 end-0 m-2"
+                    class="badge bg-danger text-white position-absolute top-0 end-0 m-2"
                   >
                     Нет в наличии
-                  </span>
+                  </span> -->
                   <div
                     class="product-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
                   >

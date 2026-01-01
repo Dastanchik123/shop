@@ -18,7 +18,7 @@ export const useProducts = () => {
     try {
       const queryParams = new URLSearchParams();
       Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
+        if (value !== undefined && value !== null && value !== "") {
           queryParams.append(key, value.toString());
         }
       });
@@ -35,6 +35,56 @@ export const useProducts = () => {
   const getProduct = async (id: number | string) => {
     try {
       return await api.apiFetch(`/products/${id}`);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const createProduct = async (data: any) => {
+    try {
+      // Проверка на FormData для загрузки файлов
+      const isFormData = data instanceof FormData;
+      const headers = isFormData ? { "Content-Type": undefined } : {};
+
+      return await api.apiFetch("/products", {
+        method: "POST",
+        body: data,
+        headers: headers as any,
+      });
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const updateProduct = async (id: number | string, data: any) => {
+    try {
+      const isFormData = data instanceof FormData;
+
+      if (isFormData) {
+        // Laravel требует POST с _method=PUT для загрузки файлов при обновлении
+        data.append("_method", "PUT");
+        return await api.apiFetch(`/products/${id}`, {
+          method: "POST",
+          body: data,
+          headers: { "Content-Type": undefined } as any,
+        });
+      }
+
+      return await api.apiFetch(`/products/${id}`, {
+        method: "PUT",
+        body: data,
+      });
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const deleteProduct = async (id: number | string) => {
+    try {
+      return await api.apiFetch(`/products/${id}`, {
+        method: "DELETE",
+      });
+      
     } catch (error) {
       throw error;
     }
@@ -71,10 +121,48 @@ export const useProducts = () => {
     }
   };
 
+  const createCategory = async (data: any) => {
+    try {
+      return await api.apiFetch("/categories", {
+        method: "POST",
+        body: data,
+      });
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const updateCategory = async (id: number | string, data: any) => {
+    try {
+      return await api.apiFetch(`/categories/${id}`, {
+        method: "PUT",
+        body: data,
+      });
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const deleteCategory = async (id: number | string) => {
+    try {
+      return await api.apiFetch(`/categories/${id}`, {
+        method: "DELETE",
+      });
+    } catch (error) {
+      throw error;
+    }
+  };
+
   return {
     getProducts,
     getProduct,
+    createProduct,
+    updateProduct,
+    deleteProduct,
     getCategories,
     getCategory,
+    createCategory,
+    updateCategory,
+    deleteCategory,
   };
 };

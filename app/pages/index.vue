@@ -19,7 +19,7 @@ const loadData = async () => {
       getProducts({ per_page: 8, in_stock: true }),
       getCategories({ is_active: true }),
     ]);
-
+    store.setProducts(productsData.data || []);
     featuredProducts.value = productsData.data || [];
     categories.value = categoriesData || [];
   } catch (error) {
@@ -254,23 +254,23 @@ onMounted(() => {
                 class="product-image-wrapper position-relative ratio ratio-1x1"
               >
                 <img
-                  :src="getProductImage(product)"
+                  :src="product.image_url"
                   class="card-img-top"
                   :alt="product.name"
                   style="height: 250px; object-fit: cover"
                 />
-                <span
-                  v-if="product.quantity > 0"
-                  class="badge bg-success position-absolute top-0 end-0 m-2"
+                <!-- <span
+                  v-if="product.stock_quantity > 0"
+                  class="badge bg-success position-absolute opacity-25 top-0 end-0 m-2 p-2"
                 >
                   В наличии
                 </span>
                 <span
                   v-else
-                  class="badge bg-danger position-absolute top-0 end-0 m-2"
+                  class="badge bg-danger position-absolute opacity-25 top-0 end-0 m-2 p-2"
                 >
                   Нет в наличии
-                </span>
+                </span> -->
                 <div
                   class="product-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
                 >
@@ -284,11 +284,11 @@ onMounted(() => {
               </div>
               <div class="card-body d-flex flex-column">
                 <span class="badge bg-primary mb-2 align-self-start">{{
-                  product.category
+                  product.category.name
                 }}</span>
                 <h5 class="card-title fw-bold mb-2">{{ product.name }}</h5>
                 <p class="card-text text-muted small mb-3 flex-grow-1">
-                  {{ product.description }}
+                  {{ product.short_description }}
                 </p>
                 <div class="d-flex justify-content-between align-items-center">
                   <div>
